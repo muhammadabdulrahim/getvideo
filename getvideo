@@ -1,5 +1,22 @@
 #!/bin/bash
 
-for url in $(cat < "$1"); do
-	wget -r -l2 -A.mp4 $url
+# paths
+mp4list=/tmp/mp4list
+mp4uniq=/tmp/mp4uniq
+
+# clear the mp4list
+cp /dev/null ${mp4list}
+cp /dev/null ${mp4uniq}
+
+# iterate over all lines in the input file,
+# grab the full HTML of each
+# then grep all found mp4s into a list
+mapfile -t arr < $1
+for i in "${!arr[@]}"; do
+	wget -q -O /tmp/file${i}.html ${arr[i]}
+	tr '"' '\n' < /tmp/file${i}.html | grep http | grep '\.mp4$' >> ${mp4list}
 done
+
+# remove duplicate entries from the mp4 list
+awk '!seen[$0]++' ${mp4list} > ${mp4uniq}
+cat ${mp4uniq}
