@@ -1,3 +1,5 @@
 #!/bin/bash
 
-echo $1
+for url in $(cat < "$1"); do
+	wget -r -l2 -A.mp4 $url
+done
