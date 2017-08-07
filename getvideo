@@ -19,4 +19,9 @@ done
 
 # remove duplicate entries from the mp4 list
 awk '!seen[$0]++' ${mp4list} > ${mp4uniq}
-cat ${mp4uniq}
+
+# iterate the mp4 unique list and download
+mapfile -t arr < ${mp4uniq}
+for i in "${!arr[@]}"; do
+	wget -q ${arr[i]}
+done
